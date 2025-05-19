@@ -11,7 +11,6 @@ app = FastAPI()
 OUTPUT_DIR = "audios"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# Liste algumas vozes brasileiras para o usuário escolher
 PRESET_VOICES = {
     "feminina_1": "pt-BR-ThalitaMultilingualNeural",
     "feminina_2": "pt-BR-FranciscaNeural",
@@ -20,7 +19,7 @@ PRESET_VOICES = {
 
 class TTSRequest(BaseModel):
     text: str
-    voice: str = "feminina_2"  # valor padrão
+    voice: str = "feminina_2"
 
 @app.post("/tts/")
 async def text_to_speech(payload: TTSRequest):
@@ -28,10 +27,8 @@ async def text_to_speech(payload: TTSRequest):
     name = payload.text[0:10].replace(" ", "_").replace(".", "_")
     mp3_path = os.path.join(OUTPUT_DIR, f"{name}.mp3")
 
-    # Seleciona a voz
     voice = PRESET_VOICES.get(payload.voice, PRESET_VOICES["feminina_2"])
 
-    # Gera o áudio async
     communicate = edge_tts.Communicate(payload.text, voice)
     await communicate.save(mp3_path)
 
